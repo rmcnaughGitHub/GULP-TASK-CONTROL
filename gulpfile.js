@@ -6,7 +6,14 @@ var gulp = require('gulp'),
 	minifycss = require('gulp-minify-css'),//https://www.npmjs.org/package/gulp-minify-css
 	rename = require('gulp-rename'),//https://www.npmjs.org/package/gulp-rename
 	browserSync = require('browser-sync').create(),
-	uglify = require('gulp-uglify');
+	uglify = require('gulp-uglify'),
+	// The gulp task system provides a gulp task 
+	// with a callback, which can signal successful
+	// task completion (being called with no arguments),
+	// or a task failure (being called with an Error 
+	// argument). 
+	// Fortunately, this is the exact same format pump uses!
+	pump = require('pump');
 
 
 //Sass
@@ -27,9 +34,17 @@ gulp.task('sass', function() {
 
 //JS Watch and Compress
 gulp.task('JS', function(){
-	gulp.src('js/main.js')
-	.pipe(uglify)
-	.pipe(gulp.dest('js'));
+	pump([
+		gulp.src('js/main.js'),
+		uglify(),
+		rename({suffix: '.min'}),
+		gulp.dest('js'),
+		browserSync.stream()
+	]);
+	/*gulp.src('js/main.js')
+	.pipe(uglify())
+	.pipe(rename({suffix: '.min'}))
+	.pipe(gulp.dest('js'));*/
 	gulp.watch("js/main.js").on('change', browserSync.reload);
 })
 
@@ -48,4 +63,5 @@ gulp.task('browser-sync', function() {
 //Default tasks
 gulp.task('default', ['sass', 'browser-sync', 'JS'], function () {  
     gulp.watch("sass/style.scss", ['sass']);
+    gulp.watch("js/main.js", ['JS']);//insures that the .min js file reloads on live reload
 });
