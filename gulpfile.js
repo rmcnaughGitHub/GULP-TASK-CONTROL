@@ -15,6 +15,12 @@ var gulp = require('gulp'),
 	// Fortunately, this is the exact same format pump uses!
 	pump = require('pump');
 
+//Html - used if compying to another directory
+gulp.task('copy-html', function(){
+	gulp.src('index.html')
+	.pipe(gulp.dest('HTML'))
+});
+
 
 //Sass
 // Because Browsersync only cares 
@@ -25,26 +31,22 @@ gulp.task('sass', function() {
         .pipe(sass({includePaths: ['scss'], style: 'expanded' }))
         .pipe(autoprefixer("last 3 version","safari 5", "ie 8", "ie 9"))
 		.pipe(gulp.dest("css"))
-		.pipe(rename({suffix: '.min'}))
-		.pipe(minifycss())
-		.pipe(gulp.dest('css'))
+		//.pipe(rename({suffix: '.min'})) //*rename
+		//.pipe(minifycss()) //*minify
 		.pipe(browserSync.stream());
     gulp.watch("sass/style.scss").on('change', browserSync.reload);
 });
 
-//JS Watch and Compress
+
+//Javscript Watch and Compress
 gulp.task('JS', function(){
 	pump([
 		gulp.src('js/main.js'),
-		uglify(),
-		rename({suffix: '.min'}),
+		//uglify(), //*minify
+		//rename({suffix: '.min'}), //*rename
 		gulp.dest('js'),
 		browserSync.stream()
 	]);
-	/*gulp.src('js/main.js')
-	.pipe(uglify())
-	.pipe(rename({suffix: '.min'}))
-	.pipe(gulp.dest('js'));*/
 	gulp.watch("js/main.js").on('change', browserSync.reload);
 })
 
@@ -60,8 +62,10 @@ gulp.task('browser-sync', function() {
     gulp.watch("*.html").on('change', browserSync.reload);
 });
 
+
 //Default tasks
-gulp.task('default', ['sass', 'browser-sync', 'JS'], function () {  
+gulp.task('default', ['sass', 'browser-sync', 'JS', 'copy-html'], function () {  
+    //gulp.watch('index.html', ['copy-html']); //* used if moving HTML file
     gulp.watch("sass/style.scss", ['sass']);
     gulp.watch("js/main.js", ['JS']);//insures that the .min js file reloads on live reload
 });
