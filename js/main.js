@@ -1,3 +1,3 @@
 document.addEventListener('DOMContentLoaded', function(){
-	console.log("WORKING LIVE NOW STILL");
+	console.log("WORKING LIVE NOW");
 });

@@ -15,11 +15,11 @@ var gulp = require('gulp'),
 	// Fortunately, this is the exact same format pump uses!
 	pump = require('pump');
 
-//Html - used if compying to another directory
+/*/Html - used if compying to another directory
 gulp.task('copy-html', function(){
 	gulp.src('index.html')
 	.pipe(gulp.dest('HTML'))
-});
+});*/
 
 
 //Sass
@@ -64,7 +64,7 @@ gulp.task('browser-sync', function() {
 
 
 //Default tasks
-gulp.task('default', ['sass', 'browser-sync', 'JS', 'copy-html'], function () {  
+gulp.task('default', ['sass', 'browser-sync', 'JS'], function () {  
     //gulp.watch('index.html', ['copy-html']); //* used if moving HTML file
     gulp.watch("sass/style.scss", ['sass']);
     gulp.watch("js/main.js", ['JS']);//insures that the .min js file reloads on live reload
