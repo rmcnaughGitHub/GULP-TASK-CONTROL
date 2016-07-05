@@ -9,36 +9,35 @@ var gulp = require('gulp'),
 	//log = util.log;
 
 
-// Browser Synch - Static 
-// Server + watching scss/html files
-gulp.task('serve', ['sass'], function() {
-
-    browserSync.init({
-        server: "./"
-    });
-
-    gulp.watch("scss/*.scss", ['sass']);
-    gulp.watch("*.html").on('change', browserSync.reload);
-});
-
-
 //Sass
-gulp.task('sass', function(){
-	//log("Generate CSS files " + (new Date()).toString());
+// Because Browsersync only cares 
+// about your CSS when it's finished compiling
+// - make sure you call .stream() after gulp.dest
+gulp.task('sass', function () { 
+	//log("Generate CSS files " + (new Date()).toString()); 
     gulp.src('sass/style.scss')
-		.pipe(sass({ style: 'expanded' }))
-		.pipe(autoprefixer("last 3 version","safari 5", "ie 8", "ie 9"))
+        .pipe(sass({includePaths: ['scss'], style: 'expanded' }))
+        .pipe(autoprefixer("last 3 version","safari 5", "ie 8", "ie 9"))
 		.pipe(gulp.dest("css"))
 		.pipe(rename({suffix: '.min'}))
 		.pipe(minifycss())
-		.pipe(gulp.dest('css'));
+		.pipe(gulp.dest('css'))
+		.pipe(browserSync.stream());
+    gulp.watch("sass/style.scss").on('change', browserSync.reload);
 });
 
-//watch
-//gulp.task('watch', function(){
-//	gulp.watch('./sass/**/*.scss', ['sass']);
-//})
+//Browser Synch - Static
+// ***can use 'serve' where 'browser-sync' is used***
+gulp.task('browser-sync', function() {  
+    browserSync.init(["css/*.css", "js/*.js"], {
+        server: {
+            baseDir: "./"
+        }
+    });
+    gulp.watch("*.html").on('change', browserSync.reload);
+});
 
-gulp.task('default', ['serve'], function(){
-
+//Default tasks
+gulp.task('default', ['sass', 'browser-sync'], function () {  
+    gulp.watch("sass/style.scss", ['sass']);
 });
