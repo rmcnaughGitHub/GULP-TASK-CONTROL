@@ -15,11 +15,11 @@ var gulp = require('gulp'),
 	// Fortunately, this is the exact same format pump uses!
 	pump = require('pump');
 
-/*/Html - used if compying to another directory
+//Html - used if compying to another directory
 gulp.task('copy-html', function(){
-	gulp.src('index.html')
-	.pipe(gulp.dest('HTML'))
-});*/
+	gulp.src('app/index.html')
+	.pipe(gulp.dest('app'))
+});
 
 
 //Sass
@@ -27,14 +27,14 @@ gulp.task('copy-html', function(){
 // about your CSS when it's finished compiling
 // - make sure you call .stream() after gulp.dest
 gulp.task('sass', function() {  
-    gulp.src('app/sass/style.scss')
+    gulp.src('app/scss/style.scss')
         .pipe(sass({includePaths: ['scss'], style: 'expanded' }))
         .pipe(autoprefixer("last 3 version","safari 5", "ie 8", "ie 9"))
-		.pipe(gulp.dest("dist/css"))
+		.pipe(gulp.dest("app/css"))
 		//.pipe(rename({suffix: '.min'})) //*rename
 		//.pipe(minifycss()) //*minify
 		.pipe(browserSync.stream());
-    gulp.watch("app/sass/style.scss").on('change', browserSync.reload);
+    gulp.watch("app/scss/style.scss").on('change', browserSync.reload);
 });
 
 
@@ -44,7 +44,7 @@ gulp.task('JS', function(){
 		gulp.src('app/js/main.js'),
 		//uglify(), //*minify
 		//rename({suffix: '.min'}), //*rename
-		gulp.dest('dist/js'),
+		gulp.dest('app/js'),
 		browserSync.stream()
 	]);
 	gulp.watch("app/js/main.js").on('change', browserSync.reload);
@@ -54,9 +54,9 @@ gulp.task('JS', function(){
 //Browser Synch - Static
 // ***can use 'serve' where 'browser-sync' is used***
 gulp.task('browser-sync', function() {  
-    browserSync.init(["css/*.css", "js/*.js"], {
+    browserSync.init(["app/css/*.css", "js/*.js"], {
         server: {
-            baseDir: "app/./"
+            baseDir: "./app"
         }
     });
     gulp.watch("app/*.html").on('change', browserSync.reload);
@@ -64,8 +64,8 @@ gulp.task('browser-sync', function() {
 
 
 //Default tasks
-gulp.task('default', ['sass', 'browser-sync', 'JS'], function () {  
-    //gulp.watch('index.html', ['copy-html']); //* used if moving HTML file
-    gulp.watch("app/sass/style.scss", ['sass']);
+gulp.task('default', ['sass', 'browser-sync', 'JS', 'copy-html'], function () {  
+    gulp.watch('app/index.html', ['copy-html']); //* used if moving HTML file
+    gulp.watch("app/scss/style.scss", ['sass']);
     gulp.watch("app/js/main.js", ['JS']);//insures that the .min js file reloads on live reload
 });
