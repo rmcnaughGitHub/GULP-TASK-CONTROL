@@ -16,10 +16,42 @@ var gulp = require('gulp'),
 	// Fortunately, this is the exact same format pump uses!
 	pump = require('pump');
 
+
+//PATHS
+var paths = {
+	base: {
+		src: './app',
+		html: 'app/*.html',
+		css: 'app/css/*.css',
+		js: 'js/*.js'
+	}, 
+	html: {
+		src: 'app/index.html',
+		main: './',
+		dist: 'dist'
+	},
+	styles: {
+		src: 'app/scss/style.scss',
+		main: 'app/css',
+		dist: 'dist/css'
+	},
+	scripts: {
+		src: 'app/js/main.js',
+		main: 'app/js',
+		dist: 'dist/js'
+	},
+	images: {
+		src: 'app/images/*.{png,jpg,jpeg,gif,svg}',
+		main: 'app/images',
+		dist: 'dist/images'
+	}
+};
+
+
 //Html - used if compying to another directory
 gulp.task('copy-html', function(){
-	gulp.src('app/index.html')
-	.pipe(gulp.dest('app'))
+	gulp.src(paths.html.src)
+	.pipe(gulp.dest(paths.base.src))
 });
 
 
@@ -28,39 +60,39 @@ gulp.task('copy-html', function(){
 // about your CSS when it's finished compiling
 // - make sure you call .stream() after gulp.dest
 gulp.task('sass', function() {  
-    gulp.src('app/scss/style.scss')
+    gulp.src(paths.styles.src)
         .pipe(sass({includePaths: ['scss'], style: 'expanded' }))
         .pipe(autoprefixer("last 3 version","safari 5", "ie 8", "ie 9"))
-		.pipe(gulp.dest("app/css"))
+		.pipe(gulp.dest(paths.styles.main))
 		//.pipe(rename({suffix: '.min'})) //*rename
 		//.pipe(minifycss()) //*minify
 		.pipe(browserSync.stream());
-    gulp.watch("app/scss/style.scss").on('change', browserSync.reload);
+    gulp.watch(paths.styles.src).on('change', browserSync.reload);
 });
 
 
 //Javscript Watch {Compress}
 gulp.task('JS', function(){
 	pump([
-		gulp.src('app/js/main.js'),
+		gulp.src(paths.scripts.src),
 		//uglify(), //*minify
 		//rename({suffix: '.min'}), //*rename
-		gulp.dest('app/js'),
+		gulp.dest(paths.scripts.main),
 		browserSync.stream()
 	]);
-	gulp.watch("app/js/main.js").on('change', browserSync.reload);
+	gulp.watch(paths.scripts.src).on('change', browserSync.reload);
 })
 
 
 //Browser Synch - Static
 // ***can use 'serve' where 'browser-sync' is used***
 gulp.task('browser-sync', function() {  
-    browserSync.init(["app/css/*.css", "js/*.js"], {
+    browserSync.init([paths.base.css, paths.base.js], {
         server: {
-            baseDir: "./app"
+            baseDir: paths.base.src
         }
     });
-    gulp.watch("app/*.html").on('change', browserSync.reload);
+    gulp.watch(paths.base.html).on('change', browserSync.reload);
 });
 
 
@@ -74,7 +106,7 @@ gulp.task('browser-sync', function() {
 
 //Default tasks
 gulp.task('default', ['sass', 'browser-sync', 'JS', 'copy-html'], function () {  
-    gulp.watch('app/index.html', ['copy-html']); //* used if moving HTML file
-    gulp.watch("app/scss/style.scss", ['sass']);
-    gulp.watch("app/js/main.js", ['JS']);//insures that the .min js file reloads on live reload
+    gulp.watch(paths.html.src, ['copy-html']); //* used if moving HTML file
+    gulp.watch(paths.styles.src, ['sass']);
+    gulp.watch(paths.scripts.src, ['JS']);//insures that the .min js file reloads on live reload
 });
