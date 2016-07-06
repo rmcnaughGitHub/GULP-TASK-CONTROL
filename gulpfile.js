@@ -9,6 +9,9 @@ var gulp = require('gulp'),
 	uglify = require('gulp-uglify'),//minify js
 	jshint = require('gulp-jshint'),//js hint
 	imagemin = require('gulp-imagemin'),//https://www.npmjs.com/package/gulp-imagemin
+	cache = require('gulp-cache'),
+	del = require('del'),
+	runSequence = require('run-sequence'),
 	/* The gulp task system provides a gulp task 
 	with a callback, which can signal successful
 	task completion (being called with no arguments),
@@ -24,7 +27,8 @@ var paths = {
 		src: './app',
 		html: 'app/*.html',
 		css: 'app/css/*.css',
-		js: 'js/*.js'
+		js: 'js/*.js',
+		DIST: 'dist'
 	}, 
 	html: {
 		src: 'app/index.html',
@@ -110,22 +114,36 @@ gulp.task('jshint', function(){
 
 
 //IMAGE-MINIFY
-gulp.task('images', function () {
+gulp.task('imageMin', function () {
     gulp.src(paths.images.src)
-        .pipe(plumber({errorHandler: onError}))
-        .pipe(cached(imageMin({optimizationLevel: 3, progressive: true, interlaced: true})))
-        .pipe(gulp.dest(paths.images.dist))
-        .pipe(size({showFiles: true}))
-        .pipe(notify('image-min is done.\n'));
-    gulp.watch(paths.images.src).on('change', browserSync.reload);
+        .pipe( cache(imagemin({
+        	optimizationLevel: 6, 
+        	progressive: true, 
+        	interlaced: true
+        })))
+  		.pipe(gulp.dest(paths.images.dist));
+    gulp.watch(paths.images.src,['imageMin']);
 });
 
 
-//Default tasks
-gulp.task('default', ['sass', 'browser-sync', 'JS', 'copy-html'], function () {  
-    gulp.watch(paths.html.src, ['copy-html']); //* used if moving HTML file
+//CLEAN DIST FOLDER
+gulp.task('clean:dist', function() {
+  return del.sync(paths.base.dist);
+})
+
+
+//DEFAULT TASKS
+gulp.task('default', function() { 
+	runSequence(['sass', 'browser-sync', 'JS', 'copy-html']) 
     gulp.watch(paths.styles.src, ['sass']);// sass
-    gulp.watch(paths.scripts.src, ['JS']);// insures that the .min js file reloads on live reload
-    //gulp.watch(path.images.src), ['images'];// image min
+    //gulp.watch(paths.scripts.src, ['JS']);// insures that the .min js file reloads on live reload
+    //gulp.watch(paths.html.src, ['copy-html']); //* used if moving HTML file
+    //gulp.watch(path.images.src), ['imageMin'];// image min
     //gulp.watch(paths.scripts.src, ['jshint']);// jshint
+});
+
+
+//BUILD TASK
+gulp.task('build', function(){
+	runSequence('clean:dist',['sass', 'browser-sync', 'JS', 'copy-html','imageMin'])
 });
