@@ -1,6 +1,5 @@
-'use strict';
+//'use strict';
 
-//const imagemin = require('gulp-imagemin');//https://www.npmjs.com/package/gulp-imagemin
 var gulp = require('gulp'),
 	sass = require('gulp-sass'),//sass compiler
 	autoprefixer = require('gulp-autoprefixer'),//https://www.npmjs.org/package/gulp-autoprefixer
@@ -9,12 +8,13 @@ var gulp = require('gulp'),
 	browserSync = require('browser-sync').create(),
 	uglify = require('gulp-uglify'),//minify js
 	jshint = require('gulp-jshint'),//js hint
-	// The gulp task system provides a gulp task 
-	// with a callback, which can signal successful
-	// task completion (being called with no arguments),
-	// or a task failure (being called with an Error 
-	// argument). 
-	// Fortunately, this is the exact same format pump uses!
+	imagemin = require('gulp-imagemin'),//https://www.npmjs.com/package/gulp-imagemin
+	/* The gulp task system provides a gulp task 
+	with a callback, which can signal successful
+	task completion (being called with no arguments),
+	or a task failure (being called with an Error 
+	argument). 
+	Fortunately, this is the exact same format pump uses!*/
 	pump = require('pump');
 
 
@@ -52,7 +52,7 @@ var paths = {
 //HTML COPY - used if compying to another directory
 gulp.task('copy-html', function(){
 	gulp.src(paths.html.src)
-	.pipe(gulp.dest(paths.base.src))
+	.pipe(gulp.dest(paths.html.dist))
 });
 
 
@@ -64,9 +64,10 @@ gulp.task('sass', function() {
     gulp.src(paths.styles.src)
         .pipe(sass({includePaths: ['scss'], style: 'expanded' }))
         .pipe(autoprefixer("last 3 version","safari 5", "ie 8", "ie 9"))
-		.pipe(gulp.dest(paths.styles.main))
+		.pipe(gulp.dest(paths.styles.main))//app folder
 		//.pipe(rename({suffix: '.min'})) //*rename
-		//.pipe(minifycss()) //*minify
+		.pipe(minifycss()) //*minify
+		.pipe(gulp.dest(paths.styles.dist))//dist folder
 		.pipe(browserSync.stream());
     gulp.watch(paths.styles.src).on('change', browserSync.reload);
 });
@@ -76,16 +77,17 @@ gulp.task('sass', function() {
 gulp.task('JS', function(){
 	pump([
 		gulp.src(paths.scripts.src),
-		//uglify(), //*minify
 		//rename({suffix: '.min'}), //*rename
 		gulp.dest(paths.scripts.main),
+		uglify(), //*minify
+		gulp.dest(paths.scripts.dist),
 		browserSync.stream()
 	]);
 	gulp.watch(paths.scripts.src).on('change', browserSync.reload);
 })
 
 
-//BROWSER SYNC - Static
+//BROWSER SYNC - LIVE RE-LOAD
 // ***can use 'serve' where 'browser-sync' is used***
 gulp.task('browser-sync', function() {  
     browserSync.init([paths.base.css, paths.base.js], {
@@ -97,26 +99,33 @@ gulp.task('browser-sync', function() {
 });
 
 
-//JS LINT
+//JS LINT {UNUSED}
 gulp.task('jshint', function(){
-	return gulp.src(paths.scripts.src)
-	.pipe(jshint())
-	.pipe(jshint.reporter('fixing JS'));
+	gulp.src(paths.scripts.src)
+		.pipe(jshint())
+		.pipe(jshint.reporter('jshint-stylish'))
+		.pipe(jshint.reporter('fail'));
+	gulp.watch(paths.scripts.src).on('change', browserSync.reload);
 });
 
 
-//IMAGE-MIN
-/*gulp.task('imagemin', function(){
-	gulp.src('app/images/*')
-		.pipe(imagemin())
-		.pipe(gulp.dest('dist/images'))
-});*/
+//IMAGE-MINIFY
+gulp.task('images', function () {
+    gulp.src(paths.images.src)
+        .pipe(plumber({errorHandler: onError}))
+        .pipe(cached(imageMin({optimizationLevel: 3, progressive: true, interlaced: true})))
+        .pipe(gulp.dest(paths.images.dist))
+        .pipe(size({showFiles: true}))
+        .pipe(notify('image-min is done.\n'));
+    gulp.watch(paths.images.src).on('change', browserSync.reload);
+});
 
 
 //Default tasks
 gulp.task('default', ['sass', 'browser-sync', 'JS', 'copy-html'], function () {  
     gulp.watch(paths.html.src, ['copy-html']); //* used if moving HTML file
-    gulp.watch(paths.styles.src, ['sass']);
-    gulp.watch(paths.scripts.src, ['JS']);//insures that the .min js file reloads on live reload
-    gulp.watch(paths.scripts.src, ['jshint']);
+    gulp.watch(paths.styles.src, ['sass']);// sass
+    gulp.watch(paths.scripts.src, ['JS']);// insures that the .min js file reloads on live reload
+    //gulp.watch(path.images.src), ['images'];// image min
+    //gulp.watch(paths.scripts.src, ['jshint']);// jshint
 });
