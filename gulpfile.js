@@ -1,5 +1,6 @@
 'use strict';
 
+//const imagemin = require('gulp-imagemin');//https://www.npmjs.com/package/gulp-imagemin
 var gulp = require('gulp'),
 	sass = require('gulp-sass'),//sass compiler
 	autoprefixer = require('gulp-autoprefixer'),//https://www.npmjs.org/package/gulp-autoprefixer
@@ -38,7 +39,7 @@ gulp.task('sass', function() {
 });
 
 
-//Javscript Watch and Compress
+//Javscript Watch {Compress}
 gulp.task('JS', function(){
 	pump([
 		gulp.src('app/js/main.js'),
@@ -61,6 +62,14 @@ gulp.task('browser-sync', function() {
     });
     gulp.watch("app/*.html").on('change', browserSync.reload);
 });
+
+
+//ImageMin
+/*gulp.task('imagemin', function(){
+	gulp.src('app/images/*')
+		.pipe(imagemin())
+		.pipe(gulp.dest('dist/images'))
+});*/
 
 
 //Default tasks

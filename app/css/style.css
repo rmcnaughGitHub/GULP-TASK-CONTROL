@@ -11,6 +11,7 @@ body, html {
 
 .container {
   background-color: #fff;
+  background-image: url("../images/panther.jpg");
   border: 1px solid #000;
   height: 90px;
   margin: 0 auto;
