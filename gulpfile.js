@@ -7,7 +7,8 @@ var gulp = require('gulp'),
 	minifycss = require('gulp-minify-css'),//https://www.npmjs.org/package/gulp-minify-css
 	rename = require('gulp-rename'),//https://www.npmjs.org/package/gulp-rename
 	browserSync = require('browser-sync').create(),
-	uglify = require('gulp-uglify'),
+	uglify = require('gulp-uglify'),//minify js
+	jshint = require('gulp-jshint'),//js hint
 	// The gulp task system provides a gulp task 
 	// with a callback, which can signal successful
 	// task completion (being called with no arguments),
@@ -48,14 +49,14 @@ var paths = {
 };
 
 
-//Html - used if compying to another directory
+//HTML COPY - used if compying to another directory
 gulp.task('copy-html', function(){
 	gulp.src(paths.html.src)
 	.pipe(gulp.dest(paths.base.src))
 });
 
 
-//Sass
+//SASS
 // Because Browsersync only cares 
 // about your CSS when it's finished compiling
 // - make sure you call .stream() after gulp.dest
@@ -71,7 +72,7 @@ gulp.task('sass', function() {
 });
 
 
-//Javscript Watch {Compress}
+//JAVASCRIPT WATCH {Compress}
 gulp.task('JS', function(){
 	pump([
 		gulp.src(paths.scripts.src),
@@ -84,7 +85,7 @@ gulp.task('JS', function(){
 })
 
 
-//Browser Synch - Static
+//BROWSER SYNC - Static
 // ***can use 'serve' where 'browser-sync' is used***
 gulp.task('browser-sync', function() {  
     browserSync.init([paths.base.css, paths.base.js], {
@@ -96,7 +97,15 @@ gulp.task('browser-sync', function() {
 });
 
 
-//ImageMin
+//JS LINT
+gulp.task('jshint', function(){
+	return gulp.src(paths.scripts.src)
+	.pipe(jshint())
+	.pipe(jshint.reporter('fixing JS'));
+});
+
+
+//IMAGE-MIN
 /*gulp.task('imagemin', function(){
 	gulp.src('app/images/*')
 		.pipe(imagemin())
@@ -109,4 +118,5 @@ gulp.task('default', ['sass', 'browser-sync', 'JS', 'copy-html'], function () {
     gulp.watch(paths.html.src, ['copy-html']); //* used if moving HTML file
     gulp.watch(paths.styles.src, ['sass']);
     gulp.watch(paths.scripts.src, ['JS']);//insures that the .min js file reloads on live reload
+    gulp.watch(paths.scripts.src, ['jshint']);
 });

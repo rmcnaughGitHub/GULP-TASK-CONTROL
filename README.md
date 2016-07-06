@@ -5,5 +5,6 @@
 <br> dependencies -  npm install --save-dev gulp-util  gulp-sass  gulp-minify-css gulp-rename  gulp-autoprefixer gulp-util gulp-minify-css gulp-rename del gulp-uglify gulp-concat jshint gulp-jshint gulp-wrapper gulp-sourcemaps
 <br> Uglify - npm install --save-dev gulp-uglify
 <br> PUMP - npm install pump
+<br> JShint: npm install jshint gulp-jshint --save-dev
 <br> 'gulp' to run server and watch
 
