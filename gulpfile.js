@@ -9,6 +9,7 @@ var gulp = require('gulp'),
 	uglify = require('gulp-uglify'),//minify js
 	jshint = require('gulp-jshint'),//js hint
 	imagemin = require('gulp-imagemin'),//https://www.npmjs.com/package/gulp-imagemin
+	pngquant = require('imagemin-pngquant'),//pngquant enabled saves extra bytes on PNG files
 	cache = require('gulp-cache'),
 	del = require('del'),
 	runSequence = require('run-sequence'),
@@ -47,7 +48,7 @@ var paths = {
 		compress: 'dist/js/*.js'
 	},
 	images: {
-		src: 'app/images/*.{png,jpg,jpeg,gif,svg}',
+		src: 'app/images/*',
 		main: 'app/images',
 		dist: 'dist/images'
 	}
@@ -60,7 +61,6 @@ gulp.task('copy-html', function(){
 	.pipe(gulp.dest(paths.html.dist))
 });
 
-
 //SASS
 // Because Browsersync only cares 
 // about your CSS when it's finished compiling
@@ -71,7 +71,6 @@ gulp.task('sass', function() {
         .pipe(autoprefixer("last 3 version","safari 5", "ie 8", "ie 9"))
 		.pipe(gulp.dest(paths.styles.main))//app folder
 		.pipe(browserSync.stream());
-    gulp.watch(paths.styles.src).on('change', browserSync.reload);
 });
 
 gulp.task('sass-build', function() {  
@@ -91,7 +90,6 @@ gulp.task('JS', function(){
 		gulp.dest(paths.scripts.main),
 		browserSync.stream()
 	]);
-	gulp.watch(paths.scripts.src).on('change', browserSync.reload);
 });
 
 
@@ -115,7 +113,6 @@ gulp.task('browser-sync', function() {
             baseDir: paths.base.src
         }
     });
-    gulp.watch(paths.base.html).on('change', browserSync.reload);
 });
 
 
@@ -134,11 +131,11 @@ gulp.task('imageMin', function () {
     gulp.src(paths.images.src)
         .pipe( cache(imagemin({
         	optimizationLevel: 6, 
-        	progressive: true, 
+        	progressive: true,
+        	use: [pngquant()], 
         	interlaced: true
-        })))
+        })) )
   		.pipe(gulp.dest(paths.images.dist));
-    gulp.watch(paths.images.src,['imageMin']);
 });
 
 
@@ -148,10 +145,19 @@ gulp.task('clean:dist', function() {
 })
 
 
+//WATCH
+gulp.task('watch', function() { 
+	gulp.watch(paths.styles.src, ['sass']);// sass
+	gulp.watch(paths.styles.src).on('change', browserSync.reload);//sass
+	gulp.watch(paths.scripts.src).on('change', browserSync.reload);//.js
+	gulp.watch(paths.base.html).on('change', browserSync.reload);//html
+	gulp.watch(paths.images.src,['imageMin']);//imageMin
+});
+
+
 //DEFAULT TASKS
 gulp.task('default', function() { 
-	runSequence(['sass', 'browser-sync', 'JS']) 
-    gulp.watch(paths.styles.src, ['sass']);// sass
+	runSequence('watch',['sass', 'browser-sync', 'JS']) 
     //gulp.watch(paths.scripts.src, ['JS']);// insures that the .min js file reloads on live reload
     //gulp.watch(paths.html.src, ['copy-html']); //* used if moving HTML file
     //gulp.watch(path.images.src), ['imageMin'];// image min
