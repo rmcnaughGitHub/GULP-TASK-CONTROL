@@ -28,7 +28,7 @@ var paths = {
 		html: 'app/*.html',
 		css: 'app/css/*.css',
 		js: 'js/*.js',
-		DIST: 'dist'
+		dist: 'dist'
 	}, 
 	html: {
 		src: 'app/index.html',
