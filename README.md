@@ -27,4 +27,5 @@ https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md
 <br>Run Sequence: npm install run-sequence --save-dev
 <br>
 <br> 'gulp' to run server and watch
+<br> 'gulp build' to build files in 'dist' folder
 

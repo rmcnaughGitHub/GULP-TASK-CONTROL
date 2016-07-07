@@ -10,6 +10,6 @@ run = {
 };
 
 document.addEventListener('DOMContentLoaded', function(){
-	console.log("WORKING LIVE NOW");
+	console.log("WORKING NOW");
 	run.init();
 });

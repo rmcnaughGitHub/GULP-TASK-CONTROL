@@ -17,15 +17,38 @@ body, html {
 	margin: 0;
 }
 
+.size {
+	
+	&-300x250{
+		height: 250px;
+		width: 300px;
+	}
+
+	&-160x600 {
+		height: 600px;
+		width: 160px;
+	}
+
+	&-728x90 {
+		height: 90px;
+		width: 728px;
+	}
+
+	&-300x600 {
+		height: 600px;
+		width: 300px;
+	}
+	
+};
+
+
 .container {
 	background-color: $white;
 	background-image: url('../images/panther.jpg');
 	border: 1px solid $black;
-	height: $wide_h;
 	margin: 0 auto;
 	overflow: hidden;
 	position: relative;
 	top: 50%;
 	transform: translateY(-50%);
-	width: $wide_w;
 }
