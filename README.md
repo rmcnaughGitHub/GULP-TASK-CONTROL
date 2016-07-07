@@ -11,6 +11,8 @@
 <br>
 <br>Installing Gulp:
 https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md
+<br>npm install --global gulp-cli
+<br>npm init
 <br>
 
 
