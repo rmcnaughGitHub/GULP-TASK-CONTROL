@@ -48,7 +48,7 @@ var paths = {
 		compress: 'dist/js/*.js'
 	},
 	images: {
-		src: 'app/images/*',
+		src: 'app/images/*.{jpg,png,gif,jpeg}',
 		main: 'app/images',
 		dist: 'dist/images'
 	}
@@ -129,12 +129,12 @@ gulp.task('jshint', function(){
 //IMAGE-MINIFY
 gulp.task('imageMin', function () {
     gulp.src(paths.images.src)
-        .pipe( cache(imagemin({
-        	optimizationLevel: 6, 
-        	progressive: true,
-        	use: [pngquant()], 
+        .pipe(imagemin({
+            progressive: true,
+            optimizationLevel: 6,
+            use: [pngquant()], 
         	interlaced: true
-        })) )
+        }))
   		.pipe(gulp.dest(paths.images.dist));
 });
 
