@@ -158,10 +158,6 @@ gulp.task('watch', function() {
 //DEFAULT TASKS
 gulp.task('default', function() { 
 	runSequence('watch',['sass', 'browser-sync', 'JS']) 
-    //gulp.watch(paths.scripts.src, ['JS']);// insures that the .min js file reloads on live reload
-    //gulp.watch(paths.html.src, ['copy-html']); //* used if moving HTML file
-    //gulp.watch(path.images.src), ['imageMin'];// image min
-    //gulp.watch(paths.scripts.src, ['jshint']);// jshint
 });
 
 
