@@ -77,7 +77,7 @@ gulp.task('sass-build', function() {
     gulp.src(paths.styles.src)
         .pipe(sass({includePaths: ['scss'], style: 'expanded' }))
         .pipe(autoprefixer("last 3 version","safari 5", "ie 8", "ie 9"))
-        .pipe(concat('styles.css'))
+        .pipe(concat('style.css'))
 		.pipe(minifycss()) //*minify
 		.pipe(gulp.dest(paths.styles.dist));//dist folder
 });
@@ -98,7 +98,7 @@ gulp.task('JS-build', function(){
 	pump([
 		gulp.src(paths.scripts.src),
 		//rename({suffix: '.min'}), //*rename
-		concat('main.js'),//*concat
+		//concat('main.js'),//*concat
 		uglify(), //*minify
 		gulp.dest(paths.scripts.dist)
 	]);
