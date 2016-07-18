@@ -48,7 +48,7 @@ var paths = {
 		compress: 'dist/js/*.js'
 	},
 	images: {
-		src: 'app/images/*',
+		src: 'app/images/*.{jpg,png,gif,jpeg}',
 		main: 'app/images',
 		dist: 'dist/images'
 	}
@@ -77,7 +77,7 @@ gulp.task('sass-build', function() {
     gulp.src(paths.styles.src)
         .pipe(sass({includePaths: ['scss'], style: 'expanded' }))
         .pipe(autoprefixer("last 3 version","safari 5", "ie 8", "ie 9"))
-        .pipe(concat('styles.css'))
+        .pipe(concat('style.css'))
 		.pipe(minifycss()) //*minify
 		.pipe(gulp.dest(paths.styles.dist));//dist folder
 });
@@ -98,7 +98,7 @@ gulp.task('JS-build', function(){
 	pump([
 		gulp.src(paths.scripts.src),
 		//rename({suffix: '.min'}), //*rename
-		concat('main.js'),//*concat
+		//concat('main.js'),//*concat
 		uglify(), //*minify
 		gulp.dest(paths.scripts.dist)
 	]);
@@ -129,12 +129,12 @@ gulp.task('jshint', function(){
 //IMAGE-MINIFY
 gulp.task('imageMin', function () {
     gulp.src(paths.images.src)
-        .pipe( cache(imagemin({
-        	optimizationLevel: 6, 
-        	progressive: true,
-        	use: [pngquant()], 
+        .pipe(imagemin({
+            progressive: true,
+            optimizationLevel: 6,
+            use: [pngquant()], 
         	interlaced: true
-        })) )
+        }))
   		.pipe(gulp.dest(paths.images.dist));
 });
 
@@ -158,10 +158,6 @@ gulp.task('watch', function() {
 //DEFAULT TASKS
 gulp.task('default', function() { 
 	runSequence('watch',['sass', 'browser-sync', 'JS']) 
-    //gulp.watch(paths.scripts.src, ['JS']);// insures that the .min js file reloads on live reload
-    //gulp.watch(paths.html.src, ['copy-html']); //* used if moving HTML file
-    //gulp.watch(path.images.src), ['imageMin'];// image min
-    //gulp.watch(paths.scripts.src, ['jshint']);// jshint
 });
 
 
